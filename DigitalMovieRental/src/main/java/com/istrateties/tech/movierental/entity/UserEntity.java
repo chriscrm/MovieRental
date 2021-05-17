@@ -1,15 +1,24 @@
 package com.istrateties.tech.movierental.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
-@Entity(name = "users")
+@Entity
+@Table(name = "user")
 public class UserEntity {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	@Column(nullable = false)
@@ -32,8 +41,13 @@ public class UserEntity {
 	@Column(nullable = false)
 	private Boolean emailVerificationStatus = false;
 	
-	@Column(nullable = false)
-	private String userRole;
+	@ManyToMany
+	@JoinTable(
+			name = "users_roles",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id")
+			)
+	private Set<UserRolesEntity> roles = new HashSet<>();
 	
 	public long getId() {
 		return id;
@@ -99,12 +113,15 @@ public class UserEntity {
 		this.emailVerificationStatus = emailVerificationStatus;
 	}
 
-	public String getUserRole() {
-		return userRole;
+	public Set<UserRolesEntity> getRoles() {
+		return roles;
 	}
 
-	public void setUserRole(String userRole) {
-		this.userRole = userRole;
+	public void setRoles(Set<UserRolesEntity> roles) {
+		this.roles = roles;
 	}
 
+	public void addRole(UserRolesEntity role) {
+		this.roles.add(role);
+	}
 }
